@@ -39,7 +39,7 @@ services:
 
   # ── open bridge server ────────────────────────────────────────────────────
   obs:
-    image: ghcr.io/starwarsfan/openbridgeserver:2026.7.0-RC2
+    image: ghcr.io/starwarsfan/openbridgeserver:2026.7.0-RC3
     restart: unless-stopped
     depends_on:
       mosquitto:

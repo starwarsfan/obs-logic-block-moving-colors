@@ -32,7 +32,7 @@ class MovingColors(LogicNodePlugin):
         return NodeTypeDef(
             type="moving_colors",
             label="Moving Colors",
-            category="lighting",
+            category="integration",
             description="Animiert RGB/W-Lichtkanäle mit unabhängig springenden Werten.",
             inputs=[
                 NodeTypePort(id="trigger",  label="Trigger",          type="trigger"),
