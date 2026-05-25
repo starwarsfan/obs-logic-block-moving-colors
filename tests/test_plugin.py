@@ -1,4 +1,4 @@
-"""Unit tests for the Shadow Control plugin.
+"""Unit tests for the LogicTemplate plugin.
 
 These tests run without a running OBS instance — conftest.py stubs out the
 OBS plugin API so the plugin module can be imported standalone.
@@ -9,41 +9,34 @@ from __future__ import annotations
 import importlib
 import sys
 
-import pytest
-
-# Import the plugin module from the repo root (not installed as a package).
-# conftest.py already injected the OBS stubs before this runs.
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent))
 plugin_mod = importlib.import_module("plugin")
-ShadowControl = plugin_mod.ShadowControl
+LogicTemplate = plugin_mod.LogicTemplate
 
 
 # ── node_type_def ─────────────────────────────────────────────────────────────
 
 
 def test_type_name():
-    assert ShadowControl.type_name == "shadow_control"
+    assert LogicTemplate.type_name == "logic_template"
 
 
 def test_node_type_def_ports():
-    td = ShadowControl.node_type_def()
-    input_ids = {p.id for p in td.inputs}
-    output_ids = {p.id for p in td.outputs}
-    assert {"sun_elevation", "indoor_temp", "override", "override_pos"} == input_ids
-    assert {"position", "active"} == output_ids
+    td = LogicTemplate.node_type_def()
+    assert {p.id for p in td.inputs} == {"in1", "in2"}
+    assert {p.id for p in td.outputs} == {"result"}
 
 
 def test_node_type_def_config_schema():
-    td = ShadowControl.node_type_def()
-    assert "threshold_elevation" in td.config_schema
-    assert "temp_threshold" in td.config_schema
+    td = LogicTemplate.node_type_def()
+    assert "multiplier" in td.config_schema
 
 
-# ── evaluate — automation mode ────────────────────────────────────────────────
+# ── evaluate ──────────────────────────────────────────────────────────────────
 
 
 def _eval(inputs=None, config=None, state=None):
-    return ShadowControl.evaluate(
+    return LogicTemplate.evaluate(
         node_id="test",
         inputs=inputs or {},
         config=config or {},
@@ -51,77 +44,24 @@ def _eval(inputs=None, config=None, state=None):
     )
 
 
-def test_below_elevation_threshold_returns_zero():
-    outputs, _ = _eval(
-        inputs={"sun_elevation": 10, "indoor_temp": 25},
-        config={"threshold_elevation": 20, "temp_threshold": 22},
-    )
-    assert outputs["position"] == 0.0
-    assert outputs["active"] is False
+def test_evaluate_sums_inputs():
+    outputs, _ = _eval(inputs={"in1": 3, "in2": 4})
+    assert outputs["result"] == 7.0
 
 
-def test_below_temp_threshold_returns_zero():
-    outputs, _ = _eval(
-        inputs={"sun_elevation": 30, "indoor_temp": 18},
-        config={"threshold_elevation": 20, "temp_threshold": 22},
-    )
-    assert outputs["position"] == 0.0
-    assert outputs["active"] is False
+def test_evaluate_applies_multiplier():
+    outputs, _ = _eval(inputs={"in1": 3, "in2": 4}, config={"multiplier": 2})
+    assert outputs["result"] == 14.0
 
 
-def test_above_both_thresholds_returns_position():
-    outputs, _ = _eval(
-        inputs={"sun_elevation": 30, "indoor_temp": 25},
-        config={"threshold_elevation": 20, "temp_threshold": 22},
-    )
-    # (30 - 20) * 2 = 20.0
-    assert outputs["position"] == 20.0
-    assert outputs["active"] is True
+def test_none_inputs_default_to_zero():
+    outputs, _ = _eval(inputs={"in1": None, "in2": None})
+    assert outputs["result"] == 0.0
 
 
-def test_position_capped_at_100():
-    outputs, _ = _eval(
-        inputs={"sun_elevation": 90, "indoor_temp": 30},
-        config={"threshold_elevation": 20, "temp_threshold": 22},
-    )
-    assert outputs["position"] == 100.0
-
-
-def test_none_inputs_treated_as_zero():
-    outputs, _ = _eval(
-        inputs={"sun_elevation": None, "indoor_temp": None},
-        config={"threshold_elevation": 20},
-    )
-    assert outputs["position"] == 0.0
-
-
-# ── evaluate — override mode ──────────────────────────────────────────────────
-
-
-def test_override_active_uses_override_position():
-    outputs, _ = _eval(
-        inputs={"override": True, "override_pos": 75, "sun_elevation": 50, "indoor_temp": 30},
-        config={"threshold_elevation": 20, "temp_threshold": 22},
-    )
-    assert outputs["position"] == 75.0
-    assert outputs["active"] is False
-
-
-def test_override_string_true():
-    outputs, _ = _eval(inputs={"override": "true", "override_pos": 50})
-    assert outputs["position"] == 50.0
-    assert outputs["active"] is False
-
-
-def test_override_false_uses_automation():
-    outputs, _ = _eval(
-        inputs={"override": False, "sun_elevation": 30, "indoor_temp": 25},
-        config={"threshold_elevation": 20, "temp_threshold": 22},
-    )
-    assert outputs["active"] is True
-
-
-# ── state passthrough ─────────────────────────────────────────────────────────
+def test_string_inputs_are_coerced():
+    outputs, _ = _eval(inputs={"in1": "5", "in2": "3"})
+    assert outputs["result"] == 8.0
 
 
 def test_state_passed_through_unchanged():

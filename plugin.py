@@ -1,13 +1,9 @@
-"""Shadow Control — example OBS logic block plugin.
+"""Logic Template — replace this docstring with your block's description.
 
-Calculates a blind/shading position from sun elevation and indoor temperature,
-with a manual override input.
+Edit this file to implement your custom logic block.
+Save — OBS reloads it automatically (no restart needed).
 
-This file is the entry point for your plugin. Edit it freely, then save —
-OBS picks up the change automatically (hot-reload, no restart needed).
-
-Rename this file and update docker-compose.yml + pyproject.toml accordingly
-when you are ready to distribute your plugin as a pip package.
+Run `python init.py` once after cloning to rename all template placeholders.
 """
 
 from __future__ import annotations
@@ -18,43 +14,31 @@ from obs.logic.plugin_api import LogicNodePlugin, NodeTypeDef, NodeTypePort, reg
 
 
 @register_node_type
-class ShadowControl(LogicNodePlugin):
-    type_name = "shadow_control"
+class LogicTemplate(LogicNodePlugin):
+    type_name = "logic_template"
 
     @classmethod
     def node_type_def(cls) -> NodeTypeDef:
         return NodeTypeDef(
-            type="shadow_control",
-            label="Shadow Control",
+            type="logic_template",
+            label="Logic Template",
             category="integration",
-            description="Calculates blind position from sun elevation and indoor temperature.",
+            description="Replace this description with your block's purpose.",
             inputs=[
-                NodeTypePort(id="sun_elevation", label="Sun elevation (°)"),
-                NodeTypePort(id="indoor_temp", label="Indoor temperature"),
-                NodeTypePort(id="override", label="Override active"),
-                NodeTypePort(id="override_pos", label="Override position"),
+                NodeTypePort(id="in1", label="Input 1"),
+                NodeTypePort(id="in2", label="Input 2"),
             ],
             outputs=[
-                NodeTypePort(id="position", label="Position (0–100)"),
-                NodeTypePort(id="active", label="Auto active"),
+                NodeTypePort(id="result", label="Result"),
             ],
             config_schema={
-                "threshold_elevation": {
+                "multiplier": {
                     "type": "number",
-                    "default": 20,
-                    "min": 0,
-                    "max": 90,
-                    "label": "Min sun elevation (°)",
-                },
-                "temp_threshold": {
-                    "type": "number",
-                    "default": 22,
-                    "min": 10,
-                    "max": 40,
-                    "label": "Activate above indoor temp (°C)",
+                    "default": 1,
+                    "label": "Multiplier",
                 },
             },
-            color="#d97706",
+            color="#6366f1",
         )
 
     @classmethod
@@ -65,23 +49,14 @@ class ShadowControl(LogicNodePlugin):
         config: dict[str, Any],
         state: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        if _to_bool(inputs.get("override")):
-            pos = _to_num(inputs.get("override_pos"), default=0.0)
-            return {"position": pos, "active": False}, state
-
-        elevation = _to_num(inputs.get("sun_elevation"))
-        indoor = _to_num(inputs.get("indoor_temp"), default=999.0)
-        threshold = float(config.get("threshold_elevation") or 20)
-        temp_th = float(config.get("temp_threshold") or 22)
-
-        if elevation < threshold or indoor < temp_th:
-            return {"position": 0.0, "active": False}, state
-
-        position = min(100.0, (elevation - threshold) * 2)
-        return {"position": round(position, 1), "active": True}, state
+        a = _to_num(inputs.get("in1"))
+        b = _to_num(inputs.get("in2"))
+        multiplier = float(config.get("multiplier") or 1)
+        result = (a + b) * multiplier
+        return {"result": round(result, 4)}, state
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Helpers — copy and adapt as needed ────────────────────────────────────────
 
 
 def _to_num(v: Any, default: float = 0.0) -> float:
