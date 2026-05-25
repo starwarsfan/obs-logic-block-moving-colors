@@ -15,13 +15,10 @@ Fork this repo, run `python init.py`, edit `plugin.py` — your block appears in
 git clone https://github.com/your-name/obs-plugin-my-block
 cd obs-plugin-my-block
 
-# 2. Personalise — replaces all template placeholders in one pass
+# 2. Run the setup script — does everything in one go
 python init.py
 
-# 3. Create your .env (defaults work for local dev)
-cp .env.example .env
-
-# 4. Start the stack
+# 3. Start the stack  (.env was already created by init.py)
 docker compose up
 ```
 
@@ -31,24 +28,32 @@ Open **http://localhost:8080** (login: `admin` / `admin`) → Logic editor → y
 
 ## What `init.py` does
 
-The script asks two questions and then updates every file in one pass:
+The script runs three steps automatically:
+
+**Step 1 — Prerequisites:** checks that Python ≥ 3.11, the Docker daemon, and Docker Compose are all available. Fails fast with a clear hint if anything is missing.
+
+**Step 2 — Personalise:** asks for your block name and renames all template placeholders across every file in one pass:
 
 ```
-Block display name (shown in the GUI palette) [My Block]: Shadow Control
-Block type name (unique snake_case identifier) [shadow_control]:
-Short description (leave blank to keep placeholder): Calculates blind position from sun elevation.
+Step 2 — Personalise
+────────────────────────────────────────────────────────────
+  Block display name (shown in the GUI palette) [My Block]: Shadow Control
+  Block type name (unique snake_case identifier) [shadow_control]:
+  Short description  (leave blank to keep placeholder):
 
-  Class name : ShadowControl
-  type_name  : shadow_control
-  Label      : Shadow Control
-  Package    : obs-plugin-shadow-control
+    Class name : ShadowControl
+    type_name  : shadow_control
+    Label      : Shadow Control
+    Package    : obs-plugin-shadow-control
 
-Proceed? [Y/n]
+  Apply? [Y/n]
 
-Done — updated: plugin.py, pyproject.toml, tests/test_plugin.py, README.md
+  [✓] Updated: plugin.py, pyproject.toml, tests/test_plugin.py, README.md
 ```
 
-After that you have a clean, personalised repo — no more "LogicTemplate" anywhere.
+**Step 3 — Environment:** copies `.env.example` → `.env` so the dev stack has credentials on first run.
+
+After `init.py` finishes, the repo is fully personalised — no more "LogicTemplate" anywhere.
 
 ---
 
