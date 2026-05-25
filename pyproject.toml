@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+# Rename to obs-plugin-<your-block-name> before publishing.
+name = "obs-plugin-template"
+version = "0.1.0"
+description = "Custom logic block plugin for open bridge server"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []
+
+# Entry point that tells OBS to import this module at startup.
+# Rename the key and the module path when you rename plugin.py.
+[project.entry-points."obs.logic_blocks"]
+template_block = "plugin"
+
+# Includes plugin.py (a single-module package) in the wheel.
+[tool.hatch.build.targets.wheel]
+include = ["plugin.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
