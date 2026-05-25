@@ -53,7 +53,7 @@ Step 2 — Personalise
 
 **Step 3 — Environment:** copies `.env.example` → `.env` so the dev stack has credentials on first run.
 
-After `init.py` finishes, the repo is fully personalised — no more "LogicTemplate" anywhere.
+After `init.py` finishes, the repo is fully personalised — no more "MovingColors" anywhere.
 
 ---
 

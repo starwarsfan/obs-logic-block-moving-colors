@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 # Renamed by init.py → obs-plugin-<your-type-name>
-name = "obs-plugin-template"
+name = "obs-plugin-moving-colors"
 version = "0.1.0"
 description = "Custom logic block plugin for open bridge server"
 readme = "README.md"
@@ -13,9 +13,9 @@ license = { text = "MIT" }
 dependencies = []
 
 # Entry point that tells OBS to import this module at startup.
-# The key (logic_template) is renamed by init.py to match your type_name.
+# The key (moving_colors) is renamed by init.py to match your type_name.
 [project.entry-points."obs.logic_blocks"]
-logic_template = "plugin"
+moving_colors = "plugin"
 
 # Includes plugin.py (single-module package) in the wheel.
 [tool.hatch.build.targets.wheel]

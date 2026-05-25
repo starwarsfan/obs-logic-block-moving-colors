@@ -1,4 +1,4 @@
-"""Logic Template — replace this docstring with your block's description.
+"""Moving Colors — replace this docstring with your block's description.
 
 Edit this file to implement your custom logic block.
 Save — OBS reloads it automatically (no restart needed).
@@ -14,16 +14,16 @@ from obs.logic.plugin_api import LogicNodePlugin, NodeTypeDef, NodeTypePort, reg
 
 
 @register_node_type
-class LogicTemplate(LogicNodePlugin):
-    type_name = "logic_template"
+class MovingColors(LogicNodePlugin):
+    type_name = "moving_colors"
 
     @classmethod
     def node_type_def(cls) -> NodeTypeDef:
         return NodeTypeDef(
-            type="logic_template",
-            label="Logic Template",
+            type="moving_colors",
+            label="Moving Colors",
             category="integration",
-            description="Replace this description with your block's purpose.",
+            description="A open bridge server logic block to randomize rgb lights",
             inputs=[
                 NodeTypePort(id="in1", label="Input 1"),
                 NodeTypePort(id="in2", label="Input 2"),

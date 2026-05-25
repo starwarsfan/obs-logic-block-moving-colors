@@ -1,4 +1,4 @@
-"""Unit tests for the LogicTemplate plugin.
+"""Unit tests for the MovingColors plugin.
 
 These tests run without a running OBS instance — conftest.py stubs out the
 OBS plugin API so the plugin module can be imported standalone.
@@ -11,24 +11,24 @@ import sys
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent.parent))
 plugin_mod = importlib.import_module("plugin")
-LogicTemplate = plugin_mod.LogicTemplate
+MovingColors = plugin_mod.MovingColors
 
 
 # ── node_type_def ─────────────────────────────────────────────────────────────
 
 
 def test_type_name():
-    assert LogicTemplate.type_name == "logic_template"
+    assert MovingColors.type_name == "moving_colors"
 
 
 def test_node_type_def_ports():
-    td = LogicTemplate.node_type_def()
+    td = MovingColors.node_type_def()
     assert {p.id for p in td.inputs} == {"in1", "in2"}
     assert {p.id for p in td.outputs} == {"result"}
 
 
 def test_node_type_def_config_schema():
-    td = LogicTemplate.node_type_def()
+    td = MovingColors.node_type_def()
     assert "multiplier" in td.config_schema
 
 
@@ -36,7 +36,7 @@ def test_node_type_def_config_schema():
 
 
 def _eval(inputs=None, config=None, state=None):
-    return LogicTemplate.evaluate(
+    return MovingColors.evaluate(
         node_id="test",
         inputs=inputs or {},
         config=config or {},
