@@ -1,0 +1,2 @@
+# Development dependencies — run tests locally without Docker
+pytest>=8.0

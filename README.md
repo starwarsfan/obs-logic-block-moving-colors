@@ -153,7 +153,7 @@ Keep it JSON-serialisable (`str`, `int`, `float`, `bool`, `list`, `dict` only).
 Tests call `evaluate()` directly — no Docker, no running OBS needed. `conftest.py` stubs the OBS plugin API so `plugin.py` imports cleanly in isolation.
 
 ```bash
-pip install pytest
+pip install -r requirements_dev.txt   # installs pytest (done by init.py step 4)
 pytest tests/ -v
 ```
 

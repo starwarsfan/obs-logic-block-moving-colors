@@ -196,7 +196,30 @@ def step_env() -> None:
         _ok("Created .env from .env.example")
 
 
-# ── Step 4: Summary ───────────────────────────────────────────────────────────
+# ── Step 4: Dev dependencies ─────────────────────────────────────────────────
+
+def step_dev_deps() -> None:
+    _section("Step 4 — Dev dependencies")
+
+    req = ROOT / "requirements_dev.txt"
+    answer = input("  Install dev dependencies for local test runs? [Y/n] ").strip().lower()
+    if answer in ("n", "no"):
+        _ok("Skipped — run manually: pip install -r requirements_dev.txt")
+        return
+
+    result = subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-r", str(req)],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        _ok("Dev dependencies installed (pytest)")
+    else:
+        print(f"  [!] pip install failed:\n{result.stderr.strip()}")
+        print("      Run manually: pip install -r requirements_dev.txt")
+
+
+# ── Step 5: Summary ───────────────────────────────────────────────────────────
 
 def step_summary(info: dict) -> None:
     type_name    = info["type_name"]
@@ -222,7 +245,7 @@ def step_summary(info: dict) -> None:
     print("    docker compose logs -f obs")
     print()
     print("  Run unit tests (no Docker needed):")
-    print("    pip install pytest && pytest tests/ -v")
+    print("    pytest tests/ -v")
     print()
     print("  Distribute:")
     print("    pip install hatch && hatch build && hatch publish")
@@ -241,6 +264,7 @@ def main() -> None:
     step_checks()
     info = step_personalise()
     step_env()
+    step_dev_deps()
     step_summary(info)
 
 
